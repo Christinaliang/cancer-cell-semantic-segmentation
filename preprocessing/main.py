@@ -1,3 +1,8 @@
+# 1. Obtain the microscopic view of the culture dish with cells from the original 4908*3264 photo;
+# 2. Remove the bright/dark background as a function of radius;
+# 3. Crop it to one hundred 320*320 images.
+# The code here will be reorganized.
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.misc import imsave
@@ -8,7 +13,6 @@ from utils import img_bgremove, contrast_plus
 
 def read_img(name, filename):
     img = plt.imread(filename+name)
-    # print(type(img), img.shape)
     return img
 
 
@@ -26,7 +30,6 @@ def img_compress(name, filename, ratio=0.5):
 
 def img_view(img):
     plt.imshow(img)
-    # plt.hlines(img.shape[0]/2, 0, img.shape[1], colors='r')
     plt.show()
 
 
@@ -37,15 +40,11 @@ def vertical_cut(img, left, right):
 
 
 def circle_cut(img, is_PS=False, zero_padding=False):
-    '''
-    The width of the image is usually greater than the height of the image.
-    '''
     center_x, center_y = int(img.shape[1]/2), int(img.shape[0]/2)
     rad = center_y
 
     if not is_PS:
         for y_i in range(center_y, img.shape[0], 1):
-            # x_range = int(np.sqrt(rad**2 - (y_i - center_y)**2))
             x_range = int(np.around(np.sqrt(rad**2 - (y_i - center_y)**2)))
             x_left, x_right = center_x - x_range, center_x + x_range
             img[y_i][x_right:].fill(0)
@@ -97,33 +96,23 @@ def search_LR(img, threshold, is_plot=False):
     return left, right
 
 
-def preprocessing(img, img_PS, name, count, is_remove, threshold):
+def preprocessing(target_dir, img, img_PS, name, count, is_remove, threshold):
     left, right = search_LR(img, threshold)
     img_v = vertical_cut(img, left, right)
     PS_v = vertical_cut(img_PS, left, right)
-    # img_view(img_v)
 
     img_circle = circle_cut(img_v)
     PS_circle = circle_cut(PS_v, is_PS=True)
     print('Final size of circle image {}: {}'.format(name[:-4], img_circle.shape))
-    # border_check(img_circle)
-    # img_view(img_circle)
-    # RGBview(img_circle)
 
     if is_remove:
         img_bgremove(img_circle)
-    # img_view(img_circle)
 
-    imsave('E:/CNN_count/preprocessing/after/series{}/{}_img_new.tif'.format(data_number, count), img_circle)
-    imsave('E:/CNN_count/preprocessing/after/series{}/{}_PS_new.tif'.format(data_number, count), PS_circle)
-
-
-'''
-May need to re-define the image 'center'. Calculate the circle center from circumference (dark curve)
-'''
+    imsave(target_dir + 'series{}/{}_img_new.tif'.format(data_number, count), img_circle)
+    imsave(target_dir + 'series{}/{}_PS_new.tif'.format(data_number, count), PS_circle)
 
 
-def select_images(filename, last_idx, threshold=35, is_remove=True, ignore=[]):
+def select_images(filename, target_dir, last_idx, threshold=35, is_remove=True, ignore=[]):
     last_idx = last_idx
     count = 0
     for idx1 in range(1, last_idx+1, 1):
@@ -143,7 +132,7 @@ def select_images(filename, last_idx, threshold=35, is_remove=True, ignore=[]):
         if os.path.exists(filename+'old/'+name) and os.path.exists(filename+'PS/'+name):
             img = read_img(name, filename+'old/')
             img_PS = read_img(name, filename+'PS/')
-            preprocessing(img, img_PS, name, count, is_remove, threshold)
+            preprocessing(target_dir, img, img_PS, name, count, is_remove, threshold)
             count += 1
 
 
@@ -182,34 +171,20 @@ def img_split(img, img_PS, folder, folder_PS, index=None, keepALL=True, num_spli
 '''
 Preprocessing
 '''
-# data_numbers = [11]
-# data_numbers = [7, 8, 9, 10, 11]
-# last_idx = 20
+# # Specify datanumbers and last_idx here
 # ignore = []
 #
 # for data_number in data_numbers:
-#     filename = 'E:/cell/20180516/{}/'.format(data_number)
+#     # Specify filename and target_dir here
 #     print('Data number is {}:'.format(data_number))
-#     select_images(filename, last_idx, threshold=80, is_remove=False, ignore=ignore)
+#     select_images(filename, target_dir, last_idx, threshold=80, is_remove=False, ignore=ignore)
 
-
-'''
-Quick view and check shape
-'''
-# img = read_img('0_img_new.tif', 'E:/CNN_count/preprocessing/')
-# print(img.shape)
-# img_view(img)
 
 '''
 Image split
-1. Still need to remove background? Can try is_remove=False.
-2. Only choose small images with interesting cells according to PS images? Have to guarantee there are also trivial cells in these images.
-   This can be realized by checking small img_PS min first and then imsave small img_PS and small img.
 '''
 
-data_dir = 'E:/cell/20180516/11/after/'
-target_dir = 'E:/CNN_count/CellSeg/data/'
-
+# Specify data_dir and target_dir here
 imgs = [file for file in os.listdir(data_dir) if file.endswith("img_new.tif")]
 masks = [file for file in os.listdir(data_dir) if file.endswith("PS_new.tif")]
 print('The number of tifs:', len(imgs)+len(masks))
@@ -224,22 +199,3 @@ for img_file in imgs:
     index = img_split(img, img_PS, target_dir, target_dir, index, keepALL=False)
     print('Image {} splitting finished!'.format(img_file))
 print(index)
-
-'''
-Tune search_LR
-'''
-# filename = 'E:/cell/20180516/8/'
-# img = read_img('10-1.tif', filename+'old/')
-# search_LR(img, 35, is_plot=True)
-
-
-'''
-Compress images
-'''
-# img_compress("0_img_new.tif", "E:/CNN_count/preprocessing/")
-
-'''
-Potential work:
-Remove background or not? Try.
-Locate the container area better.
-'''
