@@ -3,7 +3,7 @@ import argparse
 import os
 
 import sys
-sys.path.append('/public/source/home/user_t2/CellSeg/models/')
+sys.path.append(dir) # add the directory to sys.path if needed
 
 from models import *
 from celldataset import CellImages
@@ -33,8 +33,7 @@ def main():
     momentum = 0.9
     weight_decay = 5e-4
     opt_method = 'SGD with momentum'
-    print('Batch size {}, LR {}, momentum {}, weight decay {}'.format(
-        batch_size, lr, momentum, weight_decay))
+    print('Batch size {}, LR {}, momentum {}, weight decay {}'.format(batch_size, lr, momentum, weight_decay))
     print('Optimization: {}'.format(opt_method))
     image_size = 320
 
@@ -45,10 +44,10 @@ def main():
     net = DeConvNet()
     net = net.to(device)
 
-    # # Enabling cudnn, which costs 2GB extra memory
-    # if device == 'cuda':
-    #     cudnn.benchmark = True
-    #     print('cudnn benchmark enabled!')
+    # Enabling cudnn, which usually costs around 2GB extra memory
+    if device == 'cuda':
+        cudnn.benchmark = True
+        print('cudnn benchmark enabled!')
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=lr, momentum=momentum, weight_decay=weight_decay)
@@ -60,15 +59,13 @@ def main():
         transforms.Normalize((0.6672,  0.5865,  0.5985), (1.0, 1.0, 1.0)),
     ])
 
-    data_dir = '/public/source/home/user_t2/CellSeg/data/'
+    data_dir = datadir # specify the data directory if needed
     train_indices, test_indices = split_train_test(data_dir, test_size=2000)
 
     trainset = CellImages(data_dir, train_indices, img_transform=transform)
-    print('Trainset size: {}. Number of mini-batch: {}'.format(len(trainset),
-                                                               math.ceil(len(trainset)/batch_size)))
+    print('Trainset size: {}. Number of mini-batch: {}'.format(len(trainset), math.ceil(len(trainset)/batch_size)))
     testset = CellImages(data_dir, test_indices, img_transform=transform)
-    print('Testset size: {}. Number of mini-batch: {}'.format(len(testset),
-                                                              math.ceil(len(testset)/batch_size)))
+    print('Testset size: {}. Number of mini-batch: {}'.format(len(testset), math.ceil(len(testset)/batch_size)))
 
     trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=8)
     testloader = DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=8)
@@ -78,15 +75,9 @@ def main():
     print('==> Training begins..')
     for epoch in range(start_epoch, start_epoch+200):
         start_time = time.time()
-        train_results = train(
-            epoch, device, trainloader, net, criterion, optimizer, image_size, is_print_mb=False)
-        # print("--- %s seconds ---" % (time.time() - start_time))
-        # start_time = time.time()
-        test_results = test(epoch, device, testloader, net, criterion, image_size,
-                            best_acc, hps, is_save=True, is_print_mb=False)
+        train_results = train(epoch, device, trainloader, net, criterion, optimizer, image_size, is_print_mb=False)
+        test_results = test(epoch, device, testloader, net, criterion, image_size, best_acc, hps, is_save=True, is_print_mb=False)
         best_acc = test_results[-1]
-        # print("--- %s seconds ---" % (time.time() - start_time))
-
         save_epoch_results(epoch, train_results, test_results, hps)
         print("--- %s seconds ---" % (time.time() - start_time))
 
