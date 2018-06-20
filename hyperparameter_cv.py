@@ -1,5 +1,6 @@
 # Cross-Validation codes for learning rate tuning
 # Copy it to main.py if needed
+# Still in development
 
 cv_indices = split_cross_validation(data_dir, splits=8)
 lrs = np.logspace(-6, 1, num=8)
