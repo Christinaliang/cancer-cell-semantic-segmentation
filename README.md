@@ -1,5 +1,5 @@
-# cancer-cell-semantic-segmentation
-PyTorch implementation of several CNNs for segmentation of cancer cells.
+# Semantic Segmentation of Cancer Cells
+PyTorch implementation of several CNN-based models for segmentation of cancer cells.
 # Requirement
 Python 3.6.4
 
