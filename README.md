@@ -12,4 +12,4 @@ I recommend installation of [PyTorch](https://pytorch.org/) with CUDA using [Ana
 conda install pytorch torchvision cuda91 -c pytorch
 ```
 
-(This is my environment, but other verions may also work)
+(This is my environment, but others may also work)
