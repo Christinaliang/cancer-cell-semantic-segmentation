@@ -1,3 +1,7 @@
+# 1. Assuming the bright/dark backgound is a function of dish radius, fit it with a quartic function.
+# 2. Compute the mean background and substract the mean from each pixel in a radius-wise way.
+# The code here will be reorganized.
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -10,7 +14,6 @@ def get_circleRGB(img, rad):
         center_x, center_y = int(img.shape[1]/2), int(img.shape[0]/2)
         peri = []
         for y_i in range(center_y, center_y + rad, 1):
-            # x_range = int(np.sqrt(rad**2 - (y_i - center_y)**2))
             x_range = int(np.around(np.sqrt(rad**2 - (y_i - center_y)**2)))
             x_left, x_right = center_x - x_range, center_x + x_range
             peri.append(img[y_i][x_right])
@@ -35,14 +38,10 @@ def get_border(img):
     center_x, center_y = int(img.shape[1]/2), int(img.shape[0]/2)
     rad = center_y
     for y_i in range(center_y, img.shape[0], 1):
-        # x_range = int(np.sqrt(rad**2 - (y_i - center_y)**2))
         x_range = int(np.around(np.sqrt(rad**2 - (y_i - center_y)**2)))
         x_left, x_right = center_x - x_range, center_x + x_range
         borders[y_i] = (x_left, x_right)
         borders[img.shape[0]-1-y_i] = (x_left, x_right)
-    # for idx, border in enumerate(borders):
-    #     img_circle[idx][border[0]].fill(255)
-    #     img_circle[idx][border[1]-1].fill(255)
     return borders
 
 
@@ -71,17 +70,15 @@ def plot_bgcurve(rads, circle_RGBs,  circle_maxs, circle_mins, img_circle, step)
 
 def fit_bgcurve(rads, size, circle_RGBs, degree=4, is_plot=False, size_keep=500, factor=0.9, is_whitecenter=False):
     '''
-    Fit RGB background curves with quartic function.
+    Fit RGB background curves with a quartic function.
     Return discrete enhancing RGB functions. The enhancement is multiplied by 0.9 factor.
-    For white center basis, RGB values with radius in [0:500] remain unchanged.
+    In the white center scenario, RGB values with radius in [0:500] remain unchanged.
     '''
     y_RED, y_GREEN, y_BLUE = circle_RGBs[:, 0], circle_RGBs[:, 1], circle_RGBs[:, 2]
 
-    coefs_RED, coefs_GREEN, coefs_BLUE = np.polyfit(rads, y_RED, degree), np.polyfit(
-        rads, y_GREEN, degree), np.polyfit(rads, y_BLUE, degree)
+    coefs_RED, coefs_GREEN, coefs_BLUE = np.polyfit(rads, y_RED, degree), np.polyfit(rads, y_GREEN, degree), np.polyfit(rads, y_BLUE, degree)
     x_new = np.arange(0, int(size/2)+10, 1)
-    r_new, g_new, b_new = np.polyval(coefs_RED, x_new), np.polyval(
-        coefs_GREEN, x_new), np.polyval(coefs_BLUE, x_new)
+    r_new, g_new, b_new = np.polyval(coefs_RED, x_new), np.polyval(coefs_GREEN, x_new), np.polyval(coefs_BLUE, x_new)
 
     if is_plot:
         plt.figure()
@@ -94,8 +91,7 @@ def fit_bgcurve(rads, size, circle_RGBs, degree=4, is_plot=False, size_keep=500,
         plt.show()
 
     if is_whitecenter:
-        r_level, g_level, b_level = r_new[:size_keep].mean(
-        ), g_new[:size_keep].mean(), b_new[:size_keep].mean()
+        r_level, g_level, b_level = r_new[:size_keep].mean(), g_new[:size_keep].mean(), b_new[:size_keep].mean()
         r_change, g_change, b_change = r_level-r_new, g_level-g_new, b_level-b_new
         r_change[:size_keep] = np.zeros(size_keep)
         g_change[:size_keep] = np.zeros(size_keep)
@@ -124,7 +120,6 @@ def BG_reduction(img, r_change, g_change, b_change):
                 img[y_idx][x_idx][0] = 255
                 print('R>255: y={}, x={}, exceed={}'.format(y_idx, x_idx, r_change[rad]-value))
             else:
-                # img[y_idx][x_idx][0] = np.add(img[y_idx][x_idx][0], r_change[rad], dtype=np.uint8)
                 img[y_idx][x_idx][0] += r_change[rad]
                 img[y_idx][x_idx][0] = img[y_idx][x_idx][0].astype(np.uint8)
 
@@ -133,7 +128,6 @@ def BG_reduction(img, r_change, g_change, b_change):
                 img[y_idx][x_idx][1] = 255
                 print('G>255: y={}, x={}, exceed={}'.format(y_idx, x_idx, g_change[rad]-value))
             else:
-                # img[y_idx][x_idx][1] = np.add(img[y_idx][x_idx][1], g_change[rad], dtype=np.uint8)
                 img[y_idx][x_idx][1] += g_change[rad]
                 img[y_idx][x_idx][1] = img[y_idx][x_idx][1].astype(np.uint8)
 
@@ -142,17 +136,11 @@ def BG_reduction(img, r_change, g_change, b_change):
                 img[y_idx][x_idx][2] = 255
                 print('B>255: y={}, x={}, exceed={}'.format(y_idx, x_idx, b_change[rad]-value))
             else:
-                # img[y_idx][x_idx][2] = np.add(img[y_idx][x_idx][2], b_change[rad], dtype=np.uint8)
                 img[y_idx][x_idx][2] += b_change[rad]
                 img[y_idx][x_idx][2] = img[y_idx][x_idx][2].astype(np.uint8)
 
 
 def contrast_plus(img, pct=0.2):
-    '''
-    May consider enhance contrast for radius > 2/3 pixels, then remove background.
-    '''
-    # mean_R, mean_G, mean_B = img[:, :, 0].mean(), img[:, :, 1].mean(), img[:, :, 2].mean()
-    # print(mean_R, mean_G, mean_B)
     mean_R, mean_G, mean_B = 128., 128., 128.
     borders = get_border(img)
 
