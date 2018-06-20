@@ -7,6 +7,9 @@ PyTorch 0.4.0
 
 Some other libraries: NumPy 1.14.0, SciPy 1.0.0, Matpotlib 2.1.2
 
-I recommend installation of PyTorch with CUDA using Anaconda3, which includes most of the libraries required.
+I recommend installation of [PyTorch](https://pytorch.org/) with CUDA using [Anaconda](https://anaconda.org/), which includes most of the libraries required. For example, Linux users can run the following command in the terminal:
+```
+conda install pytorch torchvision cuda91 -c pytorch
+```
 
 (This is my environment, but other verions may also work)
