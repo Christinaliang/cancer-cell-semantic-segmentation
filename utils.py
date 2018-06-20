@@ -126,8 +126,6 @@ def train(epoch, device, trainloader, net, criterion, optimizer, image_size, is_
             else:
                 print('minibatch: {0:3};   cur_Loss: {1:.4f};   cur_Acc: {2:.2f};   IOU: TBD'.format(
                     batch_idx, train_loss/total, 100.*correct/total))
-        # progress_bar(batch_idx, len(trainloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
-        #              % (train_loss/(batch_idx+1), 100.*correct/total, correct, total))
     print('Training finished. Loss: {0:.4f};   Acc: {1:.2f};   IOU: {2:.2f}'.format(
         train_loss/total, 100.*correct/total, 100.*intersect_area/union_area))
     return train_loss/total, 100.*correct/total, 100.*intersect_area/union_area
@@ -163,12 +161,10 @@ def test(epoch, device, testloader, net, criterion, image_size, best_acc, hps, i
                 else:
                     print('minibatch: {0:3};   cur_Loss: {1:.4f};   cur_Acc: {2:.2f};   IOU: TBD'.format(
                         batch_idx, test_loss/total, 100.*correct/total))
-            # progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
-            #              % (test_loss/(batch_idx+1), 100.*correct/total, correct, total))
         print('Testing  finished. Loss: {0:.4f};   Acc: {1:.2f};   IOU: {2:.2f}'.format(
             test_loss/total, 100.*correct/total, 100.*intersect_area/union_area))
 
-    # Save checkpoint.
+    # Save checkpoint
     acc = correct/total
     if acc > best_acc:
         if is_save:
