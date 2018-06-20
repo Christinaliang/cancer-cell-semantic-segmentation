@@ -15,7 +15,7 @@ import torch
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 import torch.optim as optim
-# from torch.backends import cudnn
+from torch.backends import cudnn
 
 import numpy as np
 import math
