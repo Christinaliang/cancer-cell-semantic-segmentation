@@ -1,3 +1,6 @@
+# Still in development
+# Random rotation and random flip will be implemented
+
 import os
 
 import numpy as np
