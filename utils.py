@@ -2,6 +2,7 @@ import os
 import shutil
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.misc import imsave
 
 import torch
 from torch.utils.data import DataLoader
@@ -87,10 +88,10 @@ def save_epoch_results(epoch, train_results, test_results, hps):
 
     name = '-'.join([hp+str(value) for hp, value in hps.items()])+'.txt'
     with open('./epoch_results/'+name, 'a') as resfile:
-        resfile.write('\n')
         resfile.write('{0:} {1:.4f} {2:.2f} {3:.2f} {4:.4f} {5:.2f} {6:.2f}'.format(
             epoch, train_results[0], train_results[1], train_results[2], test_results[0], test_results[1], test_results[2]))
-
+        resfile.write('\n')
+        
 
 def train(epoch, device, trainloader, net, criterion, optimizer, image_size, is_print_mb=True):
     print('\nEpoch: %d' % epoch)
@@ -131,7 +132,7 @@ def train(epoch, device, trainloader, net, criterion, optimizer, image_size, is_
     return train_loss/total, 100.*correct/total, 100.*intersect_area/union_area
 
 
-def test(epoch, device, testloader, net, criterion, image_size, best_acc, hps, is_save=True, is_print_mb=True):
+def test(epoch, device, testloader, net, criterion, image_size, best_acc, hps, is_savenet=True, is_print_mb=True, is_savepred=False):
     net.eval()
     test_loss = 0
     correct = 0
@@ -154,6 +155,14 @@ def test(epoch, device, testloader, net, criterion, image_size, best_acc, hps, i
             intersect_area += intersect.sum().item()
             union_area += union.sum().item()
 
+            if is_savepred:
+                if not os.path.isdir('prediction'):
+                    os.mkdir('prediction')
+                prediction = predicted.cpu().numpy()
+                for i in range(len(prediction)):
+                    mask_pred = prediction[i].astype(np.uint8)
+                    imsave('./prediction/{}_{}.tif'.format(batch_idx, i), (1-mask_pred)*255)
+
             if is_print_mb and batch_idx % 100 == 0:
                 if union_area > 0:
                     print('minibatch: {0:3};   cur_Loss: {1:.4f};   cur_Acc: {2:.2f};   IOU: {3:.2f}'.format(
@@ -161,13 +170,15 @@ def test(epoch, device, testloader, net, criterion, image_size, best_acc, hps, i
                 else:
                     print('minibatch: {0:3};   cur_Loss: {1:.4f};   cur_Acc: {2:.2f};   IOU: TBD'.format(
                         batch_idx, test_loss/total, 100.*correct/total))
+            # progress_bar(batch_idx, len(testloader), 'Loss: %.3f | Acc: %.3f%% (%d/%d)'
+            #              % (test_loss/(batch_idx+1), 100.*correct/total, correct, total))
         print('Testing  finished. Loss: {0:.4f};   Acc: {1:.2f};   IOU: {2:.2f}'.format(
             test_loss/total, 100.*correct/total, 100.*intersect_area/union_area))
 
-    # Save checkpoint
+    # Save checkpoint.
     acc = correct/total
     if acc > best_acc:
-        if is_save:
+        if is_savenet:
             print('Saving..')
             state = {
                 'net': net.state_dict(),
@@ -180,3 +191,4 @@ def test(epoch, device, testloader, net, criterion, image_size, best_acc, hps, i
             torch.save(state, './checkpoint/'+name)
         best_acc = acc
     return test_loss/total, 100.*correct/total, 100.*intersect_area/union_area, best_acc
+
