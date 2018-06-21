@@ -28,14 +28,14 @@ class CellImages(Dataset):
         mask = plt.imread(os.path.join(self.data_dir, mask_file))
         img, mask = img[:320, :320], mask[:320, :320]
 
-        # Mask: cell is 1, background is 0
-        mask = np.min(mask, axis=2)
-        mask = np.where(mask < 250, 1, 0)
-        mask = torch.from_numpy(mask)
-
         if self.img_transform is not None:
             img = self.img_transform(img)
         if self.mask_transform is not None:
             mask = self.mask_transform(mask)
+            
+        # Mask: cell is 1, background is 0
+        mask = np.min(mask, axis=2)
+        mask = np.where(mask < 250, 1, 0)
+        mask = torch.from_numpy(mask) 
 
         return img, mask
