@@ -22,6 +22,8 @@ import math
 
 
 def main():
+    is_resume = False
+
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print('Device is {}!'.format(device))
     best_acc = 0.  # best test accuracy
@@ -31,13 +33,12 @@ def main():
     batch_size = 16
     lr = 0.01
     momentum = 0.9
-    weight_decay = 5e-4
-    opt_method = 'SGD with momentum'
-    print('Batch size {}, LR {}, momentum {}, weight decay {}'.format(batch_size, lr, momentum, weight_decay))
-    print('Optimization: {}'.format(opt_method))
+    weight_decay = 1e-3
+    opt_method = 'SGD_momentum'
     image_size = 320
 
-    hps = {'lr': lr, 'momentum': momentum, 'weight_decay': weight_decay}
+    hps = {'opt_method': opt_method, 'lr': lr, 'momentum': momentum, 'weight_decay': weight_decay}
+    print('Batch size: {}, '.format(batch_size)+', '.join([hp+': '+str(value) for hp, value in hps.items()]))
 
     # Model
     print('==> Building model..')
@@ -48,7 +49,16 @@ def main():
     if device == 'cuda':
         cudnn.benchmark = True
         print('cudnn benchmark enabled!')
-
+        
+    if is_resume:
+        # Load checkpoint.
+        print('==> Resuming from checkpoint..')
+        assert os.path.isdir('checkpoint'), 'Error: no checkpoint directory found!'
+        checkpoint = torch.load('./checkpoint/training_saved.t7') # Load your saved model
+        net.load_state_dict(checkpoint['net'])
+        best_acc = checkpoint['acc']
+        start_epoch = checkpoint['epoch']
+        
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=lr, momentum=momentum, weight_decay=weight_decay)
 
