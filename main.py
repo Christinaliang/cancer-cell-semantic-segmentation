@@ -10,6 +10,7 @@ from celldataset import CellImages
 from utils import split_train_test, split_cross_validation, reinitialize_net
 from utils import train, test, save_epoch_results
 # from utils import get_mean, show_img_and_mask
+from augmentation import *
 
 import torch
 from torch.utils.data import DataLoader
@@ -64,17 +65,22 @@ def main():
 
     # Data
     print('==> Preparing data..')
-    transform = transforms.Compose([
+    img_transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize((0.6672,  0.5865,  0.5985), (1.0, 1.0, 1.0)),
     ])
 
+    joint_transform = JointCompose([
+        ArrayToPIL(),
+        RandomRotateFlip(),
+    ])
+    
     data_dir = datadir # specify the data directory if needed
     train_indices, test_indices = split_train_test(data_dir, test_size=2000)
 
-    trainset = CellImages(data_dir, train_indices, img_transform=transform)
+    trainset = CellImages(data_dir, train_indices, img_transform=img_transform, joint_transform=joint_transform)
     print('Trainset size: {}. Number of mini-batch: {}'.format(len(trainset), math.ceil(len(trainset)/batch_size)))
-    testset = CellImages(data_dir, test_indices, img_transform=transform)
+    testset = CellImages(data_dir, test_indices, img_transform=img_transform)
     print('Testset size: {}. Number of mini-batch: {}'.format(len(testset), math.ceil(len(testset)/batch_size)))
 
     trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=8)
