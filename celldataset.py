@@ -8,7 +8,7 @@ from torch.utils.data import Dataset
 
 
 class CellImages(Dataset):
-    def __init__(self, data_dir, indices, img_transform=None, mask_transform=None):
+    def __init__(self, data_dir, indices, img_transform=None, joint_transform=None):
         self.data_dir = data_dir
         self.imgs = [idx+'_ORIG.tif' for idx in indices if os.path.exists(os.path.join(data_dir, idx+'_ORIG.tif'))]
         self.masks = [idx+'_PS.tif' for idx in indices if os.path.exists(os.path.join(data_dir, idx+'_PS.tif'))]
@@ -17,7 +17,7 @@ class CellImages(Dataset):
         if len(self.imgs) != len(self.masks):
             raise RuntimeError('The number of images is not equal to the number of masks, please check the dataset.')
         self.img_transform = img_transform
-        self.mask_transform = mask_transform
+        self.joint_transform = joint_transform
 
     def __len__(self):
         return len(self.imgs)
@@ -28,14 +28,15 @@ class CellImages(Dataset):
         mask = plt.imread(os.path.join(self.data_dir, mask_file))
         img, mask = img[:320, :320], mask[:320, :320]
 
+        if self.joint_transform is not None:
+            img, mask = self.joint_transform(img, mask)
+            mask = np.asarray(mask)
         if self.img_transform is not None:
             img = self.img_transform(img)
-        if self.mask_transform is not None:
-            mask = self.mask_transform(mask)
-            
+
         # Mask: cell is 1, background is 0
         mask = np.min(mask, axis=2)
         mask = np.where(mask < 250, 1, 0)
-        mask = torch.from_numpy(mask) 
+        mask = torch.from_numpy(mask)
 
         return img, mask
