@@ -7,15 +7,12 @@ sys.path.append(dir) # add the directory to sys.path if needed
 
 from models import *
 from celldataset import CellImages
-from utils import split_train_test, split_cross_validation, reinitialize_net
 from utils import train, test, save_epoch_results
 # from utils import get_mean, show_img_and_mask
-from augmentation import *
 
 import torch
 from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
-import torch.optim as optim
 from torch.backends import cudnn
 
 import numpy as np
@@ -61,7 +58,6 @@ def main():
         start_epoch = checkpoint['epoch']
         
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(net.parameters(), lr=lr, momentum=momentum, weight_decay=weight_decay)
 
     # Data
     print('==> Preparing data..')
@@ -70,11 +66,7 @@ def main():
         transforms.Normalize((0.6672,  0.5865,  0.5985), (1.0, 1.0, 1.0)),
     ])
 
-    joint_transform = JointCompose([
-        ArrayToPIL(),
-        RandomRotateFlip(),
-    ])
-    
+   
     data_dir = datadir # specify the data directory if needed
     test_indices = # Speicify test_indices
 
