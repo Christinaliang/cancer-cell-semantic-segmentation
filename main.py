@@ -92,7 +92,7 @@ def main():
     for epoch in range(start_epoch, start_epoch+200):
         start_time = time.time()
         train_results = train(epoch, device, trainloader, net, criterion, optimizer, image_size, is_print_mb=False)
-        test_results = test(epoch, device, testloader, net, criterion, image_size, best_acc, hps, is_save=True, is_print_mb=False)
+        test_results = test(epoch, device, testloader, net, criterion, image_size, best_acc, hps, is_save=True, is_print_mb=False, is_savepred=True)
         best_acc = test_results[-1]
         save_epoch_results(epoch, train_results, test_results, hps)
         print("--- %s seconds ---" % (time.time() - start_time))
