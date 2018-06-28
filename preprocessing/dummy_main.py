@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from scipy.misc import imsave
 import os
 
-from utils import img_bgremove, contrast_plus
+from dummy_utils import img_bgremove, contrast_plus
 
 
 def read_img(name, filename):
