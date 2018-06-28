@@ -7,16 +7,20 @@ import torch
 from torch.utils.data import DataLoader
 
 
-def split_train_test(data_dir, test_size=2000):
+def split_train_valid_test(data_dir, valid_size=5000, test_size=5000):
     tifs = [file for file in os.listdir(data_dir) if (
         file.endswith("ORIG.tif") or file.endswith("PS.tif"))]
     size = len(tifs)//2
     test_indices = np.random.choice(range(size), test_size, replace=False)
-    train_indices = np.delete(range(size), test_indices)
+    rest_indices = np.array(list(set(range(size))-set(test_indices)))
+
+    valid_indices = np.random.choice(rest_indices, valid_size, replace=False)
+    train_indices = np.array(list(set(rest_indices)-set(valid_indices)))
     np.random.shuffle(train_indices)
 
-    train_indices, test_indices = list(map(str, train_indices)), list(map(str, test_indices))
-    return train_indices, test_indices
+    train_indices, valid_indices, test_indices = list(map(str, train_indices)), list(
+        map(str, valid_indices)), list(map(str, test_indices))
+    return train_indices, valid_indices, test_indices
 
 
 def split_cross_validation(data_dir, splits=8):
@@ -190,3 +194,52 @@ def test(epoch, device, testloader, net, criterion, image_size, best_acc, hps, i
             torch.save(state, './checkpoint/'+name)
         best_acc = acc
     return test_loss/total, 100.*correct/total, 100.*intersect_area/union_area, best_acc
+
+
+def predict(name, device, net, img_transform, batch_size=11, image_size=320):
+    mask_pred = []
+
+    img_indices = [int(file[:-9])
+                   for file in os.listdir('./img_split/') if file.endswith("ORIG.tif")]
+    img_indices.sort()
+    for i in range(len(img_indices)//batch_size):
+        batch_imgs = []
+        for idx in img_indices[i*batch_size:i*batch_size+batch_size]:
+            simg = plt.imread('./img_split/{}_ORIG.tif'.format(idx))
+            simg = img_transform(simg)
+            simg = simg.reshape(1, *simg.shape)
+            batch_imgs.append(simg)
+        inputs = torch.cat(tuple(batch_imgs))
+
+        inputs = inputs.to(device)
+        outputs = net(inputs)
+
+        _, predicted = outputs.max(1)
+
+        prediction = predicted.cpu().numpy()
+        batch_masks = prediction.astype(np.uint8)
+        for j in range(len(batch_masks)):
+            imsave('./img_split/{}_PRED.tif'.format(i*batch_size+j), (1-batch_masks[j])*255)
+        mask_pred.append(np.concatenate(tuple(batch_masks), axis=-1))
+
+    mask_pred = np.array(mask_pred).reshape(
+        len(img_indices)//batch_size*image_size, batch_size*image_size)
+    imsave('./photo/{}_PRED.tif'.format(name[:-9]), (1-mask_pred)*255)
+    return mask_pred
+
+
+def img_split(img, cut_size=320, is_overlap=False):
+    size_v, size_h = img.shape[0], img.shape[1]
+    splits_v = size_v//cut_size
+    splits_h = size_h//cut_size
+
+    if not os.path.isdir('./img_split'):
+        os.mkdir('./img_split')
+
+    count = 0
+    if not is_overlap:
+        for i in range(0, splits_v, 1):
+            for j in range(0, splits_h, 1):
+                simg = img[i*cut_size:i*cut_size+cut_size, j*cut_size:j*cut_size+cut_size, :]
+                imsave('./img_split/{}_ORIG.tif'.format(count), simg)
+                count += 1
