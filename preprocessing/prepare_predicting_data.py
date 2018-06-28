@@ -1,5 +1,3 @@
-# Credit to Wei Cao
-
 import os
 import argparse
 
@@ -39,7 +37,7 @@ def photo_cut(img, name, folder, threshold=35, cut_size=320):
 
 
 parser = argparse.ArgumentParser(description='Cut old photos -> 3200 * 3520')
-parser.add_argument('--name', '-n', default=None, type=str, help='Plot the old photo and check the boundries (left and right)')
+parser.add_argument('--name', '-n', default=None, type=str, help='Plot the old photo to find the boundries (left and right) manually')
 parser.add_argument('--left', '-l', default=None, type=int, help='The position of the left boundry (int)')
 parser.add_argument('--right', '-r', default=None, type=int, help='The position of the left boundry (int)')
 args = parser.parse_args()
@@ -48,12 +46,11 @@ name = args.name
 left = args.left
 right = args.right
 
-old_dir = 'F:/old/'
-new_dir = 'F:/photo_cut/'
+old_dir = './old/'
+new_dir = './photo_cut/'
 
 if name is None:
     threshold = 35
-    # threshold = 80 
 
     old_files = [file for file in os.listdir(old_dir) if file.endswith('.tif')]
     if not os.path.isdir(new_dir):
