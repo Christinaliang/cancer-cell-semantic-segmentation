@@ -86,6 +86,7 @@ def main():
 
     trainset = CellImages(data_dir, train_indices, img_transform=img_transform, joint_transform=joint_transform)
     print('Trainset size: {}. Number of mini-batch: {}'.format(len(trainset), math.ceil(len(trainset)/batch_size)))
+    
     # One can switch between validation and test by substituting the indices
     testset = CellImages(data_dir, test_indices, img_transform=img_transform)
     print('Testset size: {}. Number of mini-batch: {}'.format(len(testset), math.ceil(len(testset)/batch_size)))
@@ -99,7 +100,7 @@ def main():
     for epoch in range(start_epoch, start_epoch+200):
         start_time = time.time()
         train_results = train(epoch, device, trainloader, net, criterion, optimizer, image_size, is_print_mb=False)
-        test_results = test(epoch, device, testloader, net, criterion, image_size, best_acc, hps, is_save=True, is_print_mb=False, is_savepred=True)
+        test_results = test(epoch, device, testloader, net, criterion, image_size, best_acc, hps, is_save=True, is_print_mb=False, is_savepred=False)
         best_acc = test_results[-1]
         save_epoch_results(epoch, train_results, test_results, hps)
         print("--- %s seconds ---" % (time.time() - start_time))
