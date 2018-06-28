@@ -59,6 +59,7 @@ def main():
         net.load_state_dict(checkpoint['net'])
         best_acc = checkpoint['acc']
         start_epoch = checkpoint['epoch']
+        print('Start Epoch is {}'.format(start_epoch))
         
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(net.parameters(), lr=lr, momentum=momentum, weight_decay=weight_decay)
@@ -75,11 +76,17 @@ def main():
         RandomRotateFlip(),
     ])
     
-    data_dir = datadir # specify the data directory if needed
-    train_indices, test_indices = split_train_test(data_dir, test_size=2000)
+    data_dir = './data/' # specify the data directory if needed
+    train_indices, valid_indices, test_indices = split_train_valid_test(data_dir, valid_size=5000, test_size=5000)
+    if not os.path.isdir('split_indices'):
+        os.mkdir('split_indices')
+    all_indices = train_indices+valid_indices+test_indices
+    fn = '-'.join([hp+str(value) for hp, value in hps.items()])+'.txt'
+    np.savetxt('./split_indices/'+fn, [int(idx) for idx in all_indices], fmt='%d')
 
     trainset = CellImages(data_dir, train_indices, img_transform=img_transform, joint_transform=joint_transform)
     print('Trainset size: {}. Number of mini-batch: {}'.format(len(trainset), math.ceil(len(trainset)/batch_size)))
+    # One can switch between validation and test by substituting the indices
     testset = CellImages(data_dir, test_indices, img_transform=img_transform)
     print('Testset size: {}. Number of mini-batch: {}'.format(len(testset), math.ceil(len(testset)/batch_size)))
 
