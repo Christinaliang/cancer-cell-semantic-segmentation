@@ -15,3 +15,9 @@ conda install pytorch torchvision cuda91 -c pytorch
 (This is my environment, but others may also work)
 # Model
 The first model is a modified version of the model in [Learning Deconvolution Network for Semantic Segmentation](https://arxiv.org/abs/1505.04366/).
+
+Network configuration:
+
+| Layer | C$\times$H | Activations | Weights |
+| ------------- |:-------------:| -----:| -----:|
+| input | 3$\times$5 | 307200 | 0 |
