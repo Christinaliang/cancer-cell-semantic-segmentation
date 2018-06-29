@@ -18,8 +18,14 @@ The first model is a modified version of the model in [Learning Deconvolution Ne
 
 Network configuration:
 
-| Layer | Output Size ![](https://latex.codecogs.com/gif.latex?C%5Ctimes%20H%5Ctimes%20W) | Activations | Weights |
+| Layer | ![](https://latex.codecogs.com/gif.latex?C%5Ctimes%20H%5Ctimes%20W) | Activations | Weights |
 | ------------- |:-------------:| -----:| -----:|
 | input | ![](https://latex.codecogs.com/gif.latex?3%5Ctimes%20320%5Ctimes%20320) | 307200 | 0 |
 | conv1-1 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20320%5Ctimes%20320) | 6553600 | 1728 |
 | conv1-2 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20320%5Ctimes%20320) | 6553600 | 36864 |
+| pool1 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20160%5Ctimes%20160) | 1638400 | 0 |
+| conv2-1 | ![](https://latex.codecogs.com/gif.latex?128%5Ctimes%20160%5Ctimes%20320) | 3276800 | 73728 |
+| conv2-2 | ![](https://latex.codecogs.com/gif.latex?128%5Ctimes%20160%5Ctimes%20320) | 3276800 | 147456 |
+| pool2 | ![](https://latex.codecogs.com/gif.latex?128%5Ctimes%2080%5Ctimes%2080) | 819200 | 0 |
+| conv2-1 | ![](https://latex.codecogs.com/gif.latex?256%5Ctimes%2080%5Ctimes%2080) | 1638400 | 294912 |
+| conv2-2 | ![](https://latex.codecogs.com/gif.latex?256%5Ctimes%2080%5Ctimes%2080) | 1638400 | 589824 |
