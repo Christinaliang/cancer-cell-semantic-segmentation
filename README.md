@@ -1,4 +1,4 @@
-<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
+
 # Semantic Segmentation of Cancer Cells
 PyTorch implementation of several CNN-based models for segmentation of cancer cells.
 # Requirement
@@ -24,3 +24,5 @@ $$y=\frac{1}{x}$$
 | Layer | C$$\times$$H | Activations | Weights |
 | ------------- |:-------------:| -----:| -----:|
 | input | 3$$\times$$5 | 307200 | 0 |
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
