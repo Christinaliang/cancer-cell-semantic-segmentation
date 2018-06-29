@@ -18,6 +18,8 @@ The first model is a modified version of the model in [Learning Deconvolution Ne
 
 Network configuration:
 
-| Layer | ![](https://latex.codecogs.com/gif.latex?C%5Ctimes%20H%5Ctimes%20W) | Activations | Weights |
+| Layer | Output Size ![](https://latex.codecogs.com/gif.latex?C%5Ctimes%20H%5Ctimes%20W) | Activations | Weights |
 | ------------- |:-------------:| -----:| -----:|
-| input | 3, 5, 5 | 307200 | 0 |
+| input | ![](https://latex.codecogs.com/gif.latex?3%5Ctimes%20320%5Ctimes%20320) | 307200 | 0 |
+| conv1-1 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20320%5Ctimes%20320) | 6553600 | 1728 |
+| conv1-2 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20320%5Ctimes%20320) | 6553600 | 36864 |
