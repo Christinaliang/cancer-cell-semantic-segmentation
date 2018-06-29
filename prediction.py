@@ -53,22 +53,52 @@ def main():
         transforms.Normalize((0.6672,  0.5865,  0.5985), (1.0, 1.0, 1.0)),
     ])
 
-    img_files = [file for file in os.listdir('./photo/') if file.endswith(".tif")]
+    X_transform = transforms.Compose([
+        transforms.ToPILImage(),
+        transforms.transforms.Pad((160, 0, 160, 0), fill=(0, 0, 0), padding_mode='constant'),
+    ])
+
+    Y_transform = transforms.Compose([
+        transforms.ToPILImage(),
+        transforms.transforms.Pad((0, 160, 0, 160), fill=(0, 0, 0), padding_mode='constant'),
+    ])
+
+    XY_transform = transforms.Compose([
+        transforms.ToPILImage(),
+        transforms.transforms.Pad((160, 160, 160, 160), fill=(0, 0, 0), padding_mode='constant'),
+    ])
 
     # Prediction
     print('==> Prediction begins..')
     net.eval()
     with torch.no_grad():
-        for img_file in img_files:
-            start_time = time.time()
-            print('{} begins'.format(img_file))
-            img = plt.imread('./photo/{}'.format(img_file))
-            img_split(img, cut_size=image_size, is_overlap=False)
-            mask = predict(img_file, device, net, img_transform=img_transform,
-                           batch_size=batch_size, image_size=image_size)
-            print('The mask of {} was predicted and saved!'.format(img_file[:-9]))
-            print("--- %s seconds ---" % (time.time() - start_time))
+        for photo_folder in os.listdir('./photo/'):
+            img_files = [os.path.join(photo_folder, file) for file in os.listdir(
+                os.path.join('./photo/', photo_folder)) if file.endswith("ORIG.tif")]
+            for img_file in img_files:
+                start_time = time.time()
+                print('{}:'.format(img_file))
+                img = plt.imread(os.path.join('./photo/', img_file))
 
+                img_split(img, cut_size=image_size, overlap_mode=0)
+                img_split(np.asarray(X_transform(img)), cut_size=image_size, overlap_mode=1)
+                img_split(np.asarray(Y_transform(img)), cut_size=image_size, overlap_mode=2)
+                img_split(np.asarray(XY_transform(img)), cut_size=image_size, overlap_mode=3)
+
+                mask = predict(device, net, img_transform=img_transform, overlap_mode=0,
+                               batch_size=batch_size, image_size=image_size).astype(bool)
+                mask_X = predict(device, net, img_transform=img_transform, overlap_mode=1,
+                                 batch_size=batch_size+1, image_size=image_size).astype(bool)
+                mask_Y = predict(device, net, img_transform=img_transform, overlap_mode=2,
+                                 batch_size=batch_size, image_size=image_size).astype(bool)
+                mask_XY = predict(device, net, img_transform=img_transform, overlap_mode=3,
+                                  batch_size=batch_size+1, image_size=image_size).astype(bool)
+
+                mask_combined = (mask+mask_X+mask_Y+mask_XY).astype(np.uint8)
+                imsave('./photo/{}_PRED.tif'.format(img_file[:-9]), (1-mask_combined)*255)
+                print('The mask of {} was predicted and saved!'.format(img_file[:-9]))
+                print("--- %s seconds ---" % (time.time() - start_time))
+            print('{} complete!\n'.format(photo_folder))
 
 
 # For Windows the conditional statement below is required
