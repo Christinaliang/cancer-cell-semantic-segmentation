@@ -18,6 +18,6 @@ The first model is a modified version of the model in [Learning Deconvolution Ne
 
 Network configuration:
 
-| Layer | C$\times$H | Activations | Weights |
+| Layer | C$$\times$$H | Activations | Weights |
 | ------------- |:-------------:| -----:| -----:|
-| input | 3$\times$5 | 307200 | 0 |
+| input | 3$$\times$$5 | 307200 | 0 |
