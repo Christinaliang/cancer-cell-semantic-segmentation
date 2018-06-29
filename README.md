@@ -14,18 +14,38 @@ conda install pytorch torchvision cuda91 -c pytorch
 
 (This is my environment, but others may also work)
 # Model
-The first model is a modified version of the model in [Learning Deconvolution Network for Semantic Segmentation](https://arxiv.org/abs/1505.04366/).
+The idea of the first model is from [Learning Deconvolution Network for Semantic Segmentation](https://arxiv.org/abs/1505.04366/). However, fully connected layers as well as some other layers are dropped in my model.
 
 Network configuration:
 
 | Layer | ![](https://latex.codecogs.com/gif.latex?C%5Ctimes%20H%5Ctimes%20W) | Activations | Weights |
 | ------------- |:-------------:| -----:| -----:|
-| input | ![](https://latex.codecogs.com/gif.latex?3%5Ctimes%20320%5Ctimes%20320) | 307200 | 0 |
-| conv1-1 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20320%5Ctimes%20320) | 6553600 | 1728 |
-| conv1-2 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20320%5Ctimes%20320) | 6553600 | 36864 |
-| pool1 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20160%5Ctimes%20160) | 1638400 | 0 |
-| conv2-1 | ![](https://latex.codecogs.com/gif.latex?128%5Ctimes%20160%5Ctimes%20320) | 3276800 | 73728 |
-| conv2-2 | ![](https://latex.codecogs.com/gif.latex?128%5Ctimes%20160%5Ctimes%20320) | 3276800 | 147456 |
-| pool2 | ![](https://latex.codecogs.com/gif.latex?128%5Ctimes%2080%5Ctimes%2080) | 819200 | 0 |
-| conv2-1 | ![](https://latex.codecogs.com/gif.latex?256%5Ctimes%2080%5Ctimes%2080) | 1638400 | 294912 |
-| conv2-2 | ![](https://latex.codecogs.com/gif.latex?256%5Ctimes%2080%5Ctimes%2080) | 1638400 | 589824 |
+| input | ![](https://latex.codecogs.com/gif.latex?3%5Ctimes%20320%5Ctimes%20320) | 307,200 | 0 |
+| conv1-1 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20320%5Ctimes%20320) | 6,553,600 | 1,728 |
+| conv1-2 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20320%5Ctimes%20320) | 6,553,600 | 36,864 |
+| pool1 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20160%5Ctimes%20160) | 1,638,400 | 0 |
+| conv2-1 | ![](https://latex.codecogs.com/gif.latex?128%5Ctimes%20160%5Ctimes%20160) | 3,276,800 | 73,728 |
+| conv2-2 | ![](https://latex.codecogs.com/gif.latex?128%5Ctimes%20160%5Ctimes%20160) | 3,276,800 | 147,456 |
+| pool2 | ![](https://latex.codecogs.com/gif.latex?128%5Ctimes%2080%5Ctimes%2080) | 819,200 | 0 |
+| conv3-1 | ![](https://latex.codecogs.com/gif.latex?256%5Ctimes%2080%5Ctimes%2080) | 1,638,400 | 294,912 |
+| conv3-2 | ![](https://latex.codecogs.com/gif.latex?256%5Ctimes%2080%5Ctimes%2080) | 1,638,400 | 589,824 |
+| pool3 | ![](https://latex.codecogs.com/gif.latex?256%5Ctimes%2040%5Ctimes%2040) | 409,600 | 0 |
+| conv4-1 | ![](https://latex.codecogs.com/gif.latex?512%5Ctimes%2040%5Ctimes%2040) | 819,200 | 1,179,648 |
+| conv4-2 | ![](https://latex.codecogs.com/gif.latex?512%5Ctimes%2040%5Ctimes%2040) | 819,200 | 2,359,296 |
+| pool4 | ![](https://latex.codecogs.com/gif.latex?512%5Ctimes%2020%5Ctimes%2020) | 204,800 | 0 |
+| conv5-1 | ![](https://latex.codecogs.com/gif.latex?1024%5Ctimes%2020%5Ctimes%2020) | 409,600 | 4,718,592 |
+| conv5-2 | ![](https://latex.codecogs.com/gif.latex?1024%5Ctimes%2020%5Ctimes%2020) | 409,600 | 9,437,184 |
+| deconv5-3 | ![](https://latex.codecogs.com/gif.latex?512%5Ctimes%2020%5Ctimes%2020) | 204,800 | 4,718,592 |
+| unpool4 | ![](https://latex.codecogs.com/gif.latex?512%5Ctimes%2040%5Ctimes%2040) | 819,200 | 0 |
+| deconv4-1 | ![](https://latex.codecogs.com/gif.latex?512%5Ctimes%2040%5Ctimes%2040) | 819,200 | 2,359,296 |
+| deconv4-2 | ![](https://latex.codecogs.com/gif.latex?256%5Ctimes%2040%5Ctimes%2040) | 409,600 | 1,179,648 |
+| unpool3 | ![](https://latex.codecogs.com/gif.latex?256%5Ctimes%2080%5Ctimes%2080) | 1,638,400 | 0 |
+| deconv3-1 | ![](https://latex.codecogs.com/gif.latex?256%5Ctimes%2080%5Ctimes%2080) | 1,638,400 | 589,824 |
+| deconv3-2 | ![](https://latex.codecogs.com/gif.latex?128%5Ctimes%2080%5Ctimes%2080) | 819,200 | 294,912 |
+| unpool2 | ![](https://latex.codecogs.com/gif.latex?128%5Ctimes%20160%5Ctimes%20160) | 3,276,800 | 0 |
+| deconv2-1 | ![](https://latex.codecogs.com/gif.latex?128%5Ctimes%20160%5Ctimes%20160) | 3,276,800 | 147,456 |
+| deconv2-2 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20160%5Ctimes%20160) | 1,638,400 | 73,728 |
+| unpool1 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20320%5Ctimes%20320) | 6,553,600 | 0 |
+| deconv1-1 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20320%5Ctimes%20320) | 6,553,600 | 36,864 |
+| deconv1-2 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20320%5Ctimes%20320) | 6,553,600 | 36,864 |
+| output | ![](https://latex.codecogs.com/gif.latex?2%5Ctimes%20320%5Ctimes%20320) | 204,800 | 128 |
