@@ -1,3 +1,5 @@
+<script type="text/javascript" async src="//cdn.bootcss.com/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 
 # Semantic Segmentation of Cancer Cells
 PyTorch implementation of several CNN-based models for segmentation of cancer cells.
@@ -19,10 +21,6 @@ The first model is a modified version of the model in [Learning Deconvolution Ne
 
 Network configuration:
 
-$$y=\frac{1}{x}$$
-
-| Layer | C$$\times$$H | Activations | Weights |
+| Layer | Output Size (C$$\alpha$$H, W) | Activations | Weights |
 | ------------- |:-------------:| -----:| -----:|
-| input | 3$$\times$$5 | 307200 | 0 |
-
-<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=default"></script>
+| input | 3, 5, 5 | 307200 | 0 |
