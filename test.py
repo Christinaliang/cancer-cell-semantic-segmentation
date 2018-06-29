@@ -8,7 +8,6 @@ sys.path.append(dir) # add the directory to sys.path if needed
 from models import *
 from celldataset import CellImages
 from utils import train, test, save_epoch_results
-# from utils import get_mean, show_img_and_mask
 
 import torch
 from torch.utils.data import DataLoader
@@ -24,8 +23,7 @@ def main():
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print('Device is {}!'.format(device))
-    best_acc = 0.  # best test accuracy
-    start_epoch = 0  # start from epoch 0 or last checkpoint epoch
+    best_acc = 0.
 
     # Hyperparameters
     batch_size = 16
@@ -66,9 +64,10 @@ def main():
         transforms.Normalize((0.6672,  0.5865,  0.5985), (1.0, 1.0, 1.0)),
     ])
 
-   
-    data_dir = datadir # specify the data directory if needed
-    test_indices = # Speicify test_indices
+    data_dir = './data/' # specify the data directory if needed
+    fn = '-'.join([hp+str(value) for hp, value in hps.items()])+'.txt'
+    all_indices = np.loadtxt('./split_indices/'+fn, dtype=str)
+    test_indices = all_indices[-5000:]
 
     testset = CellImages(data_dir, test_indices, img_transform=img_transform)
     print('Testset size: {}. Number of mini-batch: {}'.format(len(testset), math.ceil(len(testset)/batch_size)))
@@ -78,11 +77,10 @@ def main():
     # Evaluation
 
     print('==> Evaluation begins..')
-    for epoch in range(start_epoch, start_epoch+1):
-        start_time = time.time()
-        test_results = test(epoch, device, testloader, net, criterion, image_size, best_acc, hps, is_save=False, is_print_mb=False, is_savepred=True)
-        best_acc = test_results[-1]
-        print("--- %s seconds ---" % (time.time() - start_time))
+    start_time = time.time()
+    test_results = test(epoch, device, testloader, net, criterion, image_size, best_acc, hps, is_save=False, is_print_mb=False, is_savepred=True)
+    best_acc = test_results[-1]
+    print("--- %s seconds ---" % (time.time() - start_time))
 
 
 # For Windows the conditional statement below is required
