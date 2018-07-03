@@ -80,18 +80,18 @@ def main():
                 print('{}:'.format(img_file))
                 img = plt.imread(os.path.join('./photo/', img_file))
 
-                img_split(img, cut_size=image_size, overlap_mode=0)
-                img_split(np.asarray(X_transform(img)), cut_size=image_size, overlap_mode=1)
-                img_split(np.asarray(Y_transform(img)), cut_size=image_size, overlap_mode=2)
-                img_split(np.asarray(XY_transform(img)), cut_size=image_size, overlap_mode=3)
+                simgs = img_split(img, cut_size=image_size)
+                simgs_X = img_split(np.asarray(X_transform(img)), cut_size=image_size)
+                simgs_Y = img_split(np.asarray(Y_transform(img)), cut_size=image_size)
+                simgs_XY = img_split(np.asarray(XY_transform(img)), cut_size=image_size)
 
-                mask = predict(device, net, img_transform=img_transform, overlap_mode=0,
+                mask = predict(device, net, img_transform, simgs, overlap_mode=0,
                                batch_size=batch_size, image_size=image_size).astype(bool)
-                mask_X = predict(device, net, img_transform=img_transform, overlap_mode=1,
+                mask_X = predict(device, net, img_transform, simgs_X, overlap_mode=1,
                                  batch_size=batch_size+1, image_size=image_size).astype(bool)
-                mask_Y = predict(device, net, img_transform=img_transform, overlap_mode=2,
+                mask_Y = predict(device, net, img_transform, simgs_Y, overlap_mode=2,
                                  batch_size=batch_size, image_size=image_size).astype(bool)
-                mask_XY = predict(device, net, img_transform=img_transform, overlap_mode=3,
+                mask_XY = predict(device, net, img_transform, simgs_XY, overlap_mode=3,
                                   batch_size=batch_size+1, image_size=image_size).astype(bool)
 
                 mask_combined = (mask+mask_X+mask_Y+mask_XY).astype(np.uint8)
