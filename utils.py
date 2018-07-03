@@ -196,20 +196,13 @@ def test(epoch, device, testloader, net, criterion, image_size, best_acc, hps, i
     return test_loss/total, 100.*correct/total, 100.*intersect_area/union_area, best_acc
 
 
-def predict(device, net, img_transform, overlap_mode=0, batch_size=11, image_size=320):
+def predict(device, net, img_transform, simgs, overlap_mode=0, batch_size=11, image_size=320):
     mask_pred = []
 
-    folders = ['img_split', 'img_split_padX', 'img_split_padY', 'img_split_padXY']
-    folder = folders[overlap_mode]
-
-    img_indices = [int(file[:-9])
-                   for file in os.listdir('./{}/'.format(folder)) if file.endswith("ORIG.tif")]
-    img_indices.sort()
-    for i in range(len(img_indices)//batch_size):
+    for i in range(len(simgs)//batch_size):
         batch_imgs = []
-        for idx in img_indices[i*batch_size:i*batch_size+batch_size]:
-            simg = plt.imread('./{}/{}_ORIG.tif'.format(folder, idx))
-            simg = img_transform(simg)
+        for img_np in simgs[i*batch_size:i*batch_size+batch_size]:
+            simg = img_transform(img_np)
             simg = simg.reshape(1, *simg.shape)
             batch_imgs.append(simg)
         inputs = torch.cat(tuple(batch_imgs))
@@ -221,12 +214,10 @@ def predict(device, net, img_transform, overlap_mode=0, batch_size=11, image_siz
 
         prediction = predicted.cpu().numpy()
         batch_masks = prediction.astype(np.uint8)
-        for j in range(len(batch_masks)):
-            imsave('./{}/{}_PRED.tif'.format(folder, i*batch_size+j), (1-batch_masks[j])*255)
         mask_pred.append(np.concatenate(tuple(batch_masks), axis=-1))
 
     mask_pred = np.array(mask_pred).reshape(
-        len(img_indices)//batch_size*image_size, batch_size*image_size)
+        len(simgs)//batch_size*image_size, batch_size*image_size)
 
     if overlap_mode == 1:
         mask_pred = mask_pred[:, 160:-160]
@@ -238,20 +229,14 @@ def predict(device, net, img_transform, overlap_mode=0, batch_size=11, image_siz
     return mask_pred
 
 
-def img_split(img, cut_size=320, overlap_mode=0):
+def img_split(img, cut_size=320):
     size_v, size_h = img.shape[0], img.shape[1]
     splits_v = size_v//cut_size
     splits_h = size_h//cut_size
 
-    folders = ['img_split', 'img_split_padX', 'img_split_padY', 'img_split_padXY']
-    folder = folders[overlap_mode]
-
-    if not os.path.isdir('./{}'.format(folder)):
-        os.mkdir('./{}'.format(folder))
-
-    count = 0
+    simgs = []
     for i in range(0, splits_v, 1):
         for j in range(0, splits_h, 1):
             simg = img[i*cut_size:i*cut_size+cut_size, j*cut_size:j*cut_size+cut_size, :]
-            imsave('./{}/{}_ORIG.tif'.format(folder, count), simg)
-            count += 1
+            simgs.append(simg)
+    return simgs
