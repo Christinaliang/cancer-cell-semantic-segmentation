@@ -2,9 +2,6 @@ import time
 import argparse
 import os
 
-import sys
-sys.path.append(dir) # add the directory to sys.path if needed
-
 from models import *
 from celldataset import CellImages
 from utils import split_train_test, split_cross_validation, reinitialize_net
