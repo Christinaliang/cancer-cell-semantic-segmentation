@@ -2,9 +2,6 @@ import time
 import argparse
 import os
 
-import sys
-sys.path.append(dir) # add the directory to sys.path if needed
-
 from models import *
 from utils import predict, img_split
 
