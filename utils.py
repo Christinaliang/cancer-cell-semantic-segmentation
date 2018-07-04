@@ -112,7 +112,6 @@ def train(epoch, device, trainloader, net, criterion, optimizer, image_size, is_
         loss.backward()
         optimizer.step()
 
-        # Check predicted is a variable in the graph or not
         train_loss += (loss.item()*targets.size(0))
         _, predicted = outputs.max(1)
         total += targets.size(0)
