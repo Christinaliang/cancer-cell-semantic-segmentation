@@ -2,9 +2,6 @@ import time
 import argparse
 import os
 
-import sys
-sys.path.append(dir) # add the directory to sys.path if needed
-
 from models import *
 from celldataset import CellImages
 from utils import train, test, save_epoch_results
