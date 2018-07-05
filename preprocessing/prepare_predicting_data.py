@@ -65,6 +65,5 @@ else:
         photo_cut(img, name, new_dir, left, right)
         print('{} updated!'.format(name))
 
-if len(os.listdir(old_dir)) != len(os.listdir(new_dir)):
-	print('The number of files in new_dir {} is not equal to the number of files in old_dir {}! Please check the folders!'\
-		.format(len(os.listdir(new_dir)), len(os.listdir(old_dir))))
+assert len(os.listdir(old_dir)) == len(os.listdir(new_dir)), \
+'The number of files in new_dir {} is not equal to the number of files in old_dir {}! Please check the folders!'.format(len(os.listdir(new_dir)), len(os.listdir(old_dir)))
