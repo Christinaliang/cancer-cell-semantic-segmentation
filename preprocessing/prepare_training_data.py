@@ -114,8 +114,7 @@ data_dir = './data/'
 img_files = [file for file in os.listdir(target_dir) if file.endswith('ORIG.tif')]
 mask_files = [file for file in os.listdir(target_dir) if file.endswith('PS.tif')]
 print('The number of tifs:', len(img_files)+len(mask_files))
-if len(img_files) != len(mask_files):
-    raise RuntimeError('The number of images is not equal to the number of masks.')
+assert len(img_files) == len(mask_files), 'The number of images is not equal to the number of masks!'
 
 index = 0
 for img_file in img_files:
