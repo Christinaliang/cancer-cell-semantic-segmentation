@@ -4,9 +4,8 @@ import os
 
 from models import *
 from celldataset import CellImages
-from utils import split_train_test, split_cross_validation, reinitialize_net
+from utils import split_train_valid_test
 from utils import train, test, save_epoch_results
-# from utils import get_mean, show_img_and_mask
 from augmentation import *
 
 import torch
