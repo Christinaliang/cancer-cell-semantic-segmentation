@@ -16,7 +16,7 @@ conda install pytorch torchvision cuda91 -c pytorch
 # Model
 The idea of this model is from [Learning Deconvolution Network for Semantic Segmentation](https://arxiv.org/abs/1505.04366/). Unlike the original model, fully connected layers as well as some other layers are dropped in my **DeConvNet**.
 
-**DeConvNet** configuration:
+20-layer **DeConvNet** configuration:
 
 | Layer | ![](https://latex.codecogs.com/gif.latex?C%5Ctimes%20H%5Ctimes%20W) | Activations | Weights |
 | ------------- |:-------------:| -----:| -----:|
