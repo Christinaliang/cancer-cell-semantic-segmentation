@@ -7,7 +7,6 @@ treat_files = [file for file in os.listdir(dir) if file[:2]!='NC' and file[:2]!=
 nc_files = [file for file in os.listdir(dir) if (file[:2]=='NC' or file[:2]=='nc') and file.endswith('_PRED.tif')]
 
 mask_files=sorted(treat_files, key = lambda x: int(x[:x.find('-')]))+nc_files
-
 with open(dir+'areas.txt', 'a') as area_file:
 	for mask_file in mask_files:
 		mask = plt.imread(dir+mask_file)
