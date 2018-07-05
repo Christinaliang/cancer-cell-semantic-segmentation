@@ -20,20 +20,15 @@ def search_LR(img, threshold, is_plot=False):
     return left, right
 
 
-def tif_cut(img, left, right):
-    cut_idx = np.arange(left, right, 1)
-    img_v = np.take(img, cut_idx, axis=1)
-    return img_v[:3200]
-
-
 def photo_cut(img, name, folder, threshold=35, cut_size=320):
     left, right = search_LR(img, threshold, is_plot=False)
     center = (left+right)//2
     width = 3520
     left, right = center-width//2, center+width//2
-
-    img = tif_cut(img, left, right)
-    imsave(folder+'{}_ORIG.tif'.format(name[:-4]), img)
+    
+    cut_idx = np.arange(left, right, 1)
+    img = np.take(img, cut_idx, axis=1)
+    imsave(folder+'{}_ORIG.tif'.format(name[:-4]), img[:3200])
 
 
 parser = argparse.ArgumentParser(description='Cut old photos -> 3200 * 3520')
