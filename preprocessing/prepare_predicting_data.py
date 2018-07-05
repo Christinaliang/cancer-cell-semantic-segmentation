@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from scipy.misc import imsave
 
 
-def search_LR(img, threshold, is_plot=False):
+def search_LR(img, threshold=35, is_plot=False):
     center_y = int(img.shape[0]/2)
     center_line = img[center_y]
     mean_RGB = center_line.mean(axis=1)
@@ -20,13 +20,12 @@ def search_LR(img, threshold, is_plot=False):
     return left, right
 
 
-def photo_cut(img, name, folder, threshold=35, cut_size=320):
-    left, right = search_LR(img, threshold, is_plot=False)
+def photo_cut(img, name, folder, left, right):
     center = (left+right)//2
     width = 3520
-    left, right = center-width//2, center+width//2
+    new_left, new_right = center-width//2, center+width//2
     
-    cut_idx = np.arange(left, right, 1)
+    cut_idx = np.arange(new_left, new_right, 1)
     img = np.take(img, cut_idx, axis=1)
     imsave(folder+'{}_ORIG.tif'.format(name[:-4]), img[:3200])
 
@@ -53,7 +52,8 @@ if name is None:
 
     for old_file in old_files:
         img = plt.imread(old_dir+old_file)
-        photo_cut(img, old_file, new_dir, threshold=threshold)
+        left, right = search_LR(img, threshold=threshold, is_plot=False)
+        photo_cut(img, old_file, new_dir, left, right)
         print('{} completed!'.format(old_file))
 
 else:
@@ -62,9 +62,9 @@ else:
         plt.imshow(img)
         plt.show()
     else:
-        center = (left+right)//2
-        width = 3520
-        left, right = center-width//2, center+width//2
-        img = tif_cut(img, left, right)
-        imsave(new_dir+'{}_ORIG.tif'.format(name[:-4]), img)
+        photo_cut(img, name, new_dir, left, right)
         print('{} updated!'.format(name))
+
+if len(os.listdir(old_dir)) != len(os.listdir(new_dir)):
+	print('The number of files in new_dir {} is not equal to the number of files in old_dir {}! Please check the folders!'\
+		.format(len(os.listdir(new_dir)), len(os.listdir(old_dir))))
