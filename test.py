@@ -4,7 +4,7 @@ import os
 
 from models import *
 from celldataset import CellImages
-from utils import train, test, save_epoch_results
+from utils import test
 
 import torch
 from torch.utils.data import DataLoader
