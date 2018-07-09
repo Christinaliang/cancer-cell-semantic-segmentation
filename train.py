@@ -41,6 +41,9 @@ def main():
     print('==> Building model..')
     net = DeConvNet()
     net = net.to(device)
+    
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.SGD(net.parameters(), lr=lr, momentum=momentum, weight_decay=weight_decay)
 
     # Enabling cudnn, which usually costs around 2GB extra memory
     if device == 'cuda':
@@ -53,13 +56,11 @@ def main():
         assert os.path.isdir('checkpoint'), 'Error: no checkpoint directory found!'
         checkpoint = torch.load('./checkpoint/training_saved.t7') # Load your saved model
         net.load_state_dict(checkpoint['net'])
+        optimizer.load_state_dict(checkpoint['optim'])
         best_acc = checkpoint['acc']
         start_epoch = checkpoint['epoch']
         print('Start Epoch is {}'.format(start_epoch))
         
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(net.parameters(), lr=lr, momentum=momentum, weight_decay=weight_decay)
-
     # Data
     print('==> Preparing data..')
     img_transform = transforms.Compose([
@@ -95,7 +96,7 @@ def main():
     for epoch in range(start_epoch, start_epoch+200):
         start_time = time.time()
         train_results = train(epoch, device, trainloader, net, criterion, optimizer, image_size, is_print_mb=False)
-        valid_results = test(epoch, device, validloader, net, criterion, image_size, best_acc, hps, is_save=True, is_print_mb=False, is_savepred=False)
+        valid_results = test(epoch, device, validloader, net, criterion, optimizer, image_size, best_acc, hps, is_save=True, is_print_mb=False, is_savepred=False)
         best_acc = valid_results[-1]
         save_epoch_results(epoch, train_results, valid_results, hps)
         print("--- %s seconds ---" % (time.time() - start_time))
