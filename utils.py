@@ -135,7 +135,7 @@ def train(epoch, device, trainloader, net, criterion, optimizer, image_size, is_
     return train_loss/total, 100.*correct/total, 100.*intersect_area/union_area
 
 
-def test(epoch, device, testloader, net, criterion, image_size, best_acc, hps, is_savenet=True, is_print_mb=True, is_savepred=False):
+def test(epoch, device, testloader, net, criterion, optimizer, image_size, best_acc, hps, is_savenet=True, is_print_mb=True, is_savepred=False):
     net.eval()
     test_loss = 0
     correct = 0
@@ -184,6 +184,7 @@ def test(epoch, device, testloader, net, criterion, image_size, best_acc, hps, i
             print('Saving..')
             state = {
                 'net': net.state_dict(),
+                'optim': optimizer.state_dict(),
                 'acc': acc,
                 'epoch': epoch,
             }
