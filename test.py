@@ -37,6 +37,9 @@ def main():
     print('==> Building model..')
     net = DeConvNet()
     net = net.to(device)
+    
+    criterion = nn.CrossEntropyLoss()
+    optimizer = None
 
     # Enabling cudnn, which usually costs around 2GB extra memory
     if device == 'cuda':
@@ -52,8 +55,6 @@ def main():
         best_acc = checkpoint['acc']
         start_epoch = checkpoint['epoch']
         
-    criterion = nn.CrossEntropyLoss()
-
     # Data
     print('==> Preparing data..')
     img_transform = transforms.Compose([
@@ -75,7 +76,7 @@ def main():
 
     print('==> Evaluation begins..')
     start_time = time.time()
-    test_results = test(epoch, device, testloader, net, criterion, image_size, best_acc, hps, is_save=False, is_print_mb=False, is_savepred=True)
+    test_results = test(epoch, device, testloader, net, criterion, optimizer, image_size, best_acc, hps, is_save=False, is_print_mb=False, is_savepred=True)
     best_acc = test_results[-1]
     print("--- %s seconds ---" % (time.time() - start_time))
 
