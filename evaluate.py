@@ -43,7 +43,7 @@ def main():
         cudnn.benchmark = True
         print('cudnn benchmark enabled!')
 
-    # Load checkpoint.
+    # Load checkpoint
     print('==> Resuming from checkpoint..')
     assert os.path.isdir('checkpoint'), 'Error: no checkpoint directory found!'
     checkpoint = torch.load('./checkpoint/training_saved.t7')  # Load your saved model
