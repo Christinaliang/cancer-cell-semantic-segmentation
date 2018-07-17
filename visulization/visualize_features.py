@@ -24,10 +24,10 @@ for weight in weights:
 
 fig = plt.figure(figsize=(8, 8))
 for i in range(64):
-    ax1 = fig.add_subplot(8, 8, i+1)
-    ax1.imshow(features[i])
-    ax1.axis('off')
-    ax1.set_xticklabels([])
-    ax1.set_yticklabels([])
+    ax = fig.add_subplot(8, 8, i+1)
+    ax.imshow(features[i])
+    ax.axis('off')
+    ax.set_xticklabels([])
+    ax.set_yticklabels([])
 plt.subplots_adjust(wspace=0.1, hspace=0.1)
 plt.show()
