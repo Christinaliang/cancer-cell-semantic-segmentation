@@ -38,7 +38,7 @@ def main():
     criterion = nn.CrossEntropyLoss()
     optimizer = None
 
-    # Enabling cudnn, which usually costs around 2GB extra memory
+    # Enabling cudnn, which may lead to about 2 GB extra memory
     if device == 'cuda':
         cudnn.benchmark = True
         print('cudnn benchmark enabled!')
