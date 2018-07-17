@@ -7,10 +7,13 @@ import torch
 from torch.utils.data import DataLoader
 
 
-def split_train_valid_test(data_dir, valid_size=5000, test_size=5000):
+def split_train_valid_test(data_dir):
     tifs = [file for file in os.listdir(data_dir) if (
         file.endswith("ORIG.tif") or file.endswith("PS.tif"))]
     size = len(tifs)//2
+    valid_size = int(size/10)
+    test_size = int(size/10)
+    
     test_indices = np.random.choice(range(size), test_size, replace=False)
     rest_indices = np.array(list(set(range(size))-set(test_indices)))
 
