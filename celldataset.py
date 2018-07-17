@@ -34,7 +34,7 @@ class CellImages(Dataset):
         if self.img_transform is not None:
             img = self.img_transform(img)
 
-        # Mask: cell is 1, background is 0
+        # Mask pixel values: cell=1, background=0
         mask = np.min(mask, axis=2)
         mask = np.where(mask < 250, 1, 0)
         mask = torch.from_numpy(mask)
