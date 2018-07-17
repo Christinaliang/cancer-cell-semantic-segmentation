@@ -220,11 +220,11 @@ def predict(device, net, img_transform, simgs, overlap_mode=0, batch_size=11, im
         len(simgs)//batch_size*image_size, batch_size*image_size)
 
     if overlap_mode == 1:
-        mask_pred = mask_pred[:, 160:-160]
+        mask_pred = mask_pred[:, image_size//2:-image_size//2]
     elif overlap_mode == 2:
-        mask_pred = mask_pred[160:-160, :]
+        mask_pred = mask_pred[image_size//2:-image_size//2, :]
     elif overlap_mode == 3:
-        mask_pred = mask_pred[160:-160, 160:-160]
+        mask_pred = mask_pred[image_size//2:-image_size//2, image_size//2:-image_size//2]
 
     return mask_pred
 
