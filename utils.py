@@ -130,7 +130,7 @@ def train(epoch, device, trainloader, net, criterion, optimizer, image_size, is_
                 print('minibatch: {0:3};  cur_Loss: {1:.4f};  cur_Acc: {2:.2f};  IOU: TBD'.format(
                     batch_idx, train_loss/total, 100.*correct/total))
                 
-    print('Training finished. Loss: {0:.4f};  Acc: {1:.2f};  IOU: {2:.2f}'.format(
+    print('Epoch (training) complete. Loss: {0:.4f};  Acc: {1:.2f};  IOU: {2:.2f}'.format(
         train_loss/total, 100.*correct/total, 100.*intersect_area/union_area))
     return train_loss/total, 100.*correct/total, 100.*intersect_area/union_area
 
@@ -174,10 +174,10 @@ def test(epoch, device, testloader, net, criterion, optimizer, image_size, best_
                     print('minibatch: {0:3};  cur_Loss: {1:.4f};  cur_Acc: {2:.2f};  IOU: TBD'.format(
                         batch_idx, test_loss/total, 100.*correct/total))
 
-        print('Testing  finished. Loss: {0:.4f};  Acc: {1:.2f};  IOU: {2:.2f}'.format(
+        print('Epoch (test) complete. Loss: {0:.4f};  Acc: {1:.2f};  IOU: {2:.2f}'.format(
             test_loss/total, 100.*correct/total, 100.*intersect_area/union_area))
 
-    # Save checkpoint.
+    # Save checkpoint
     acc = correct/total
     if acc > best_acc:
         if is_savenet:
@@ -188,7 +188,7 @@ def test(epoch, device, testloader, net, criterion, optimizer, image_size, best_
                 'acc': acc,
                 'epoch': epoch,
             }
-            if not os.path.isdir('checkpoint'):
+            if not os.path.isdir('checkpoint'):test
                 os.mkdir('checkpoint')
             name = '-'.join([hp+str(value) for hp, value in hps.items()])+'.t7'
             torch.save(state, './checkpoint/'+name)
