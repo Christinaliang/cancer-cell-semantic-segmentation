@@ -43,8 +43,7 @@ def main():
     opt_method = 'SGD_momentum'
 
     hps = {'opt_method': opt_method, 'lr': lr, 'momentum': momentum, 'weight_decay': weight_decay}
-    print('Batch size: {}, '.format(batch_size) +
-          ', '.join([hp+': '+str(value) for hp, value in hps.items()]))
+    print('Batch size: {}, '.format(batch_size) +', '.join([hp+': '+str(value) for hp, value in hps.items()]))
 
     # Model
     print('==> Building model..')
@@ -98,14 +97,11 @@ def main():
         all_indices = train_indices+valid_indices+test_indices
         np.savetxt('./split_indices/all_indices.txt', [int(idx) for idx in all_indices], fmt='%d')
 
-    trainset = CellImages(data_dir, train_indices, img_transform=img_transform,
-                          joint_transform=joint_transform)
-    print('Trainset size: {}. Number of mini-batch: {}'.format(len(trainset),
-                                                               math.ceil(len(trainset)/batch_size)))
+    trainset = CellImages(data_dir, train_indices, img_transform=img_transform, joint_transform=joint_transform)
+    print('Trainset size: {}. Number of mini-batch: {}'.format(len(trainset), math.ceil(len(trainset)/batch_size)))
 
     validset = CellImages(data_dir, valid_indices, img_transform=img_transform)
-    print('Validset size: {}. Number of mini-batch: {}'.format(len(validset),
-                                                               math.ceil(len(validset)/batch_size)))
+    print('Validset size: {}. Number of mini-batch: {}'.format(len(validset), math.ceil(len(validset)/batch_size)))
 
     trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=args.cpus)
     validloader = DataLoader(validset, batch_size=batch_size, shuffle=False, num_workers=args.cpus)
@@ -115,10 +111,8 @@ def main():
     for epoch in range(start_epoch, start_epoch+args.epochs):
         start_time = time.time()
 
-        train_results = train(epoch, device, trainloader, net, criterion,
-                              optimizer, image_size, is_print_mb=False)
-        valid_results = test(epoch, device, validloader, net, criterion, optimizer,
-                             image_size, best_acc, hps, is_save=True, is_print_mb=False, is_savepred=args.savepred)
+        train_results = train(epoch, device, trainloader, net, criterion, optimizer, image_size, is_print_mb=False)
+        valid_results = test(epoch, device, validloader, net, criterion, optimizer, image_size, best_acc, hps, is_save=True, is_print_mb=False, is_savepred=args.savepred)
         best_acc = valid_results[-1]
         save_epoch_results(epoch, train_results, valid_results, hps)
 
