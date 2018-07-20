@@ -49,6 +49,7 @@ def main():
     checkpoint = torch.load('./checkpoint/training_saved.t7')  # Load your saved model
     net.load_state_dict(checkpoint['net'])
     best_acc = checkpoint['acc']
+    best_IOU = checkpoint['metric']
 
     # Data
     print('==> Preparing data..')
@@ -72,7 +73,7 @@ def main():
     print('==> Evaluation begins..')
     start_time = time.time()
 
-    test_results = test(epoch, device, testloader, net, criterion, optimizer, image_size, best_acc, hps, is_save=False, is_print_mb=False, is_savepred=args.savepred)
+    test_results = test(epoch, device, testloader, net, criterion, optimizer, image_size, best_acc, best_IOU, hps, is_save=False, is_print_mb=False, is_savepred=args.savepred)
 
     print("--- %s seconds ---" % (time.time() - start_time))
 
