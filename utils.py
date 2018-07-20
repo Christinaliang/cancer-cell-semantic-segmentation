@@ -184,36 +184,34 @@ def test(epoch, device, testloader, net, criterion, optimizer, image_size, best_
     acc = correct/total
     metric = IOUs/total
 
-    if acc > best_acc:
-        if is_savenet:
-            print('Saving (metric is pixel accuracy)..')
-            state = {
-                'net': net.state_dict(),
-                'optim': optimizer.state_dict(),
-                'acc': acc,
-                'metric': metric,
-                'epoch': epoch,
-            }
-            if not os.path.isdir('checkpoint'):
-                os.mkdir('checkpoint')
-            name = '-'.join([hp+str(value) for hp, value in hps.items()])+'-best_acc.t7'
-            torch.save(state, './checkpoint/'+name)
+    if acc > best_acc and is_savenet:
+        print('Saving (metric is pixel accuracy)..')
+        state = {
+            'net': net.state_dict(),
+            'optim': optimizer.state_dict(),
+            'acc': acc,
+            'metric': metric,
+            'epoch': epoch,
+        }
+        if not os.path.isdir('checkpoint'):
+            os.mkdir('checkpoint')
+        name = '-'.join([hp+str(value) for hp, value in hps.items()])+'-best_acc.t7'
+        torch.save(state, './checkpoint/'+name)
         best_acc = acc
 
-    if metric > best_IOU:
-        if is_savenet:
-            print('Saving (metric is IoU)..')
-            state = {
-                'net': net.state_dict(),
-                'optim': optimizer.state_dict(),
-                'acc': acc,
-                'metric': metric,
-                'epoch': epoch,
-            }
-            if not os.path.isdir('checkpoint'):
-                os.mkdir('checkpoint')
-            name = '-'.join([hp+str(value) for hp, value in hps.items()])+'-best_IOU.t7'
-            torch.save(state, './checkpoint/'+name)
+    if metric > best_IOU and is_savenet:
+        print('Saving (metric is IoU)..')
+        state = {
+            'net': net.state_dict(),
+            'optim': optimizer.state_dict(),
+            'acc': acc,
+            'metric': metric,
+            'epoch': epoch,
+        }
+        if not os.path.isdir('checkpoint'):
+            os.mkdir('checkpoint')
+        name = '-'.join([hp+str(value) for hp, value in hps.items()])+'-best_IOU.t7'
+        torch.save(state, './checkpoint/'+name)
         best_IOU = metric
         
     return test_loss/total, 100.*correct/total, 100.*IOUs/total, best_acc, best_IOU
