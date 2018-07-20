@@ -18,6 +18,8 @@ The idea of this model is from [Learning Deconvolution Network for Semantic Segm
 
 20-layer **DeConvNet** configuration:
 
+![alt text](https://github.com/CoserU/cancer-cell-semantic-segmentation/blob/master/visulization/figures/deconvnet.png)
+
 | Layer | ![](https://latex.codecogs.com/gif.latex?C%5Ctimes%20H%5Ctimes%20W) | Activations | Weights |
 | ------------- |:-------------:| -----:| -----:|
 | input | ![](https://latex.codecogs.com/gif.latex?3%5Ctimes%20320%5Ctimes%20320) | 307,200 | 0 |
@@ -37,17 +39,17 @@ The idea of this model is from [Learning Deconvolution Network for Semantic Segm
 | conv5-2 | ![](https://latex.codecogs.com/gif.latex?1024%5Ctimes%2020%5Ctimes%2020) | 409,600 | 9,437,184 |
 | deconv5-3 | ![](https://latex.codecogs.com/gif.latex?512%5Ctimes%2020%5Ctimes%2020) | 204,800 | 4,718,592 |
 | unpool4 | ![](https://latex.codecogs.com/gif.latex?512%5Ctimes%2040%5Ctimes%2040) | 819,200 | 0 |
-| deconv4-1 | ![](https://latex.codecogs.com/gif.latex?512%5Ctimes%2040%5Ctimes%2040) | 819,200 | 2,359,296 |
-| deconv4-2 | ![](https://latex.codecogs.com/gif.latex?256%5Ctimes%2040%5Ctimes%2040) | 409,600 | 1,179,648 |
+| deconv6-1 | ![](https://latex.codecogs.com/gif.latex?512%5Ctimes%2040%5Ctimes%2040) | 819,200 | 2,359,296 |
+| deconv6-2 | ![](https://latex.codecogs.com/gif.latex?256%5Ctimes%2040%5Ctimes%2040) | 409,600 | 1,179,648 |
 | unpool3 | ![](https://latex.codecogs.com/gif.latex?256%5Ctimes%2080%5Ctimes%2080) | 1,638,400 | 0 |
-| deconv3-1 | ![](https://latex.codecogs.com/gif.latex?256%5Ctimes%2080%5Ctimes%2080) | 1,638,400 | 589,824 |
-| deconv3-2 | ![](https://latex.codecogs.com/gif.latex?128%5Ctimes%2080%5Ctimes%2080) | 819,200 | 294,912 |
+| deconv7-1 | ![](https://latex.codecogs.com/gif.latex?256%5Ctimes%2080%5Ctimes%2080) | 1,638,400 | 589,824 |
+| deconv7-2 | ![](https://latex.codecogs.com/gif.latex?128%5Ctimes%2080%5Ctimes%2080) | 819,200 | 294,912 |
 | unpool2 | ![](https://latex.codecogs.com/gif.latex?128%5Ctimes%20160%5Ctimes%20160) | 3,276,800 | 0 |
-| deconv2-1 | ![](https://latex.codecogs.com/gif.latex?128%5Ctimes%20160%5Ctimes%20160) | 3,276,800 | 147,456 |
-| deconv2-2 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20160%5Ctimes%20160) | 1,638,400 | 73,728 |
+| deconv8-1 | ![](https://latex.codecogs.com/gif.latex?128%5Ctimes%20160%5Ctimes%20160) | 3,276,800 | 147,456 |
+| deconv8-2 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20160%5Ctimes%20160) | 1,638,400 | 73,728 |
 | unpool1 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20320%5Ctimes%20320) | 6,553,600 | 0 |
-| deconv1-1 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20320%5Ctimes%20320) | 6,553,600 | 36,864 |
-| deconv1-2 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20320%5Ctimes%20320) | 6,553,600 | 36,864 |
+| deconv9-1 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20320%5Ctimes%20320) | 6,553,600 | 36,864 |
+| deconv9-2 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20320%5Ctimes%20320) | 6,553,600 | 36,864 |
 | output | ![](https://latex.codecogs.com/gif.latex?2%5Ctimes%20320%5Ctimes%20320) | 204,800 | 128 |
 
 U-Net from [U-Net: Convolutional Networks for Biomedical Image Segmentation](https://arxiv.org/abs/1505.04597/) was also implemented in the models. Here the paddings of 3 by 3 convolutional layers were set as 1 to preserve the spatial size.
