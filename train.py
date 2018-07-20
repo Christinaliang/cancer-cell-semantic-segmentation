@@ -32,6 +32,7 @@ def main():
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     print('Device is {}!'.format(device))
     best_acc = 0.  # best test accuracy
+    best_IOU = 0.  # best test IOU
     start_epoch = 0  # start from epoch 0 or last checkpoint epoch
     image_size = 320
 
@@ -112,8 +113,8 @@ def main():
         start_time = time.time()
 
         train_results = train(epoch, device, trainloader, net, criterion, optimizer, image_size, is_print_mb=False)
-        valid_results = test(epoch, device, validloader, net, criterion, optimizer, image_size, best_acc, hps, is_save=True, is_print_mb=False, is_savepred=args.savepred)
-        best_acc = valid_results[-1]
+        valid_results = test(epoch, device, validloader, net, criterion, optimizer, image_size, best_acc, best_IOU, hps, is_save=True, is_print_mb=False, is_savepred=args.savepred)
+        best_acc, best_IOU = valid_results[-2], valid_results[-1]
         save_epoch_results(epoch, train_results, valid_results, hps)
 
         print("--- %s seconds ---" % (time.time() - start_time))
