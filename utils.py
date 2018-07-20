@@ -105,7 +105,7 @@ def train(epoch, device, trainloader, net, criterion, optimizer, image_size, is_
     train_loss = 0
     correct = 0
     total = 0
-    intersect_area, union_area = 0, 0
+    IOUs = 0
 
     for batch_idx, (inputs, targets) in enumerate(trainloader):
         inputs, targets = inputs.to(device), targets.to(device)
@@ -122,28 +122,28 @@ def train(epoch, device, trainloader, net, criterion, optimizer, image_size, is_
 
         intersect = predicted*targets
         union = predicted+targets-intersect
-        intersect_area += intersect.sum().item()
-        union_area += union.sum().item()
+        intersect = intersect.sum(2).sum(1).cpu().numpy()
+        union = union.sum(2).sum(1).cpu().numpy()
+        zeros = union == 0
+        intersect[zeros] = 1
+        union[zeros] = 1
+        IOUs += (intersect/union).sum()
 
         if is_print_mb and batch_idx % 100 == 0:
-            if union_area > 0:
-                print('minibatch: {0:3};  cur_Loss: {1:.4f};  cur_Acc: {2:.2f};  IOU: {3:.2f}'.format(
-                    batch_idx, train_loss/total, 100.*correct/total, 100.*intersect_area/union_area))
-            else:
-                print('minibatch: {0:3};  cur_Loss: {1:.4f};  cur_Acc: {2:.2f};  IOU: TBD'.format(
-                    batch_idx, train_loss/total, 100.*correct/total))
+            print('minibatch: {0:3};  cur_Loss: {1:.4f};  cur_Acc: {2:.2f};  IOU: {3:.2f}'.format(
+                batch_idx, train_loss/total, 100.*correct/total, 100.*IOUs/total))
                 
     print('Epoch (training) complete. Loss: {0:.4f};  Acc: {1:.2f};  IOU: {2:.2f}'.format(
-        train_loss/total, 100.*correct/total, 100.*intersect_area/union_area))
-    return train_loss/total, 100.*correct/total, 100.*intersect_area/union_area
+        train_loss/total, 100.*correct/total, 100.*IOUs/total))
+    return train_loss/total, 100.*correct/total, 100.*IOUs/total
 
 
-def test(epoch, device, testloader, net, criterion, optimizer, image_size, best_acc, hps, is_savenet=True, is_print_mb=True, is_savepred=False):
+def test(epoch, device, testloader, net, criterion, optimizer, image_size, best_acc, best_IOU, hps, is_savenet=True, is_print_mb=True, is_savepred=False):
     net.eval()
     test_loss = 0
     correct = 0
     total = 0
-    intersect_area, union_area = 0, 0
+    IOUs = 0
 
     with torch.no_grad():
         for batch_idx, (inputs, targets) in enumerate(testloader):
@@ -158,8 +158,12 @@ def test(epoch, device, testloader, net, criterion, optimizer, image_size, best_
 
             intersect = predicted*targets
             union = predicted+targets-intersect
-            intersect_area += intersect.sum().item()
-            union_area += union.sum().item()
+            intersect = intersect.sum(2).sum(1).cpu().numpy()
+            union = union.sum(2).sum(1).cpu().numpy()
+            zeros = union == 0
+            intersect[zeros] = 1
+            union[zeros] = 1
+            IOUs += (intersect/union).sum()
 
             if is_savepred:
                 if not os.path.isdir('prediction'):
@@ -170,33 +174,49 @@ def test(epoch, device, testloader, net, criterion, optimizer, image_size, best_
                     imsave('./prediction/{}_{}.tif'.format(batch_idx, i), (1-mask_pred)*255)
 
             if is_print_mb and batch_idx % 100 == 0:
-                if union_area > 0:
-                    print('minibatch: {0:3};  cur_Loss: {1:.4f};  cur_Acc: {2:.2f};  IOU: {3:.2f}'.format(
-                        batch_idx, test_loss/total, 100.*correct/total, 100.*intersect_area/union_area))
-                else:
-                    print('minibatch: {0:3};  cur_Loss: {1:.4f};  cur_Acc: {2:.2f};  IOU: TBD'.format(
-                        batch_idx, test_loss/total, 100.*correct/total))
+                print('minibatch: {0:3};  cur_Loss: {1:.4f};  cur_Acc: {2:.2f};  IOU: {3:.2f}'.format(
+                    batch_idx, test_loss/total, 100.*correct/total, 100.*IOUs/total))
 
         print('Epoch (test) complete. Loss: {0:.4f};  Acc: {1:.2f};  IOU: {2:.2f}'.format(
-            test_loss/total, 100.*correct/total, 100.*intersect_area/union_area))
+            test_loss/total, 100.*correct/total, 100.*IOUs/total))
 
     # Save checkpoint
     acc = correct/total
+    metric = IOUs/total
+
     if acc > best_acc:
         if is_savenet:
-            print('Saving..')
+            print('Saving (metric is pixel accuracy)..')
             state = {
                 'net': net.state_dict(),
                 'optim': optimizer.state_dict(),
                 'acc': acc,
+                'metric': metric,
                 'epoch': epoch,
             }
-            if not os.path.isdir('checkpoint'):test
+            if not os.path.isdir('checkpoint'):
                 os.mkdir('checkpoint')
-            name = '-'.join([hp+str(value) for hp, value in hps.items()])+'.t7'
+            name = '-'.join([hp+str(value) for hp, value in hps.items()])+'-best_acc.t7'
             torch.save(state, './checkpoint/'+name)
         best_acc = acc
-    return test_loss/total, 100.*correct/total, 100.*intersect_area/union_area, best_acc
+
+    if metric > best_IOU:
+        if is_savenet:
+            print('Saving (metric is IoU)..')
+            state = {
+                'net': net.state_dict(),
+                'optim': optimizer.state_dict(),
+                'acc': acc,
+                'metric': metric,
+                'epoch': epoch,
+            }
+            if not os.path.isdir('checkpoint'):
+                os.mkdir('checkpoint')
+            name = '-'.join([hp+str(value) for hp, value in hps.items()])+'-best_IOU.t7'
+            torch.save(state, './checkpoint/'+name)
+        best_IOU = metric
+        
+    return test_loss/total, 100.*correct/total, 100.*IOUs/total, best_acc, best_IOU
 
 
 def predict(device, net, img_transform, simgs, overlap_mode=0, batch_size=11, image_size=320):
