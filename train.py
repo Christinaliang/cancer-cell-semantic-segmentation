@@ -22,7 +22,7 @@ def main():
     parser.add_argument('--resume', '-r', action='store_true', help='Resume from checkpoint')
     parser.add_argument('--lr', default=0.01, type=float, help='Learning rate')
     parser.add_argument('--m', default=0.9, type=float, help='Momentum')
-    parser.add_argument('--wd', default=1e-3, type=float, help='Weight decay')
+    parser.add_argument('--wd', default=5e-4, type=float, help='Weight decay')
     parser.add_argument('--bs', default=16, type=int, help='Batch size')
     parser.add_argument('--cpus', default=8, type=int, help='The number of CPUs for loading data')
     parser.add_argument('--epochs', default=200, type=int, help='The number of training epochs')
@@ -67,6 +67,7 @@ def main():
         net.load_state_dict(checkpoint['net'])
         optimizer.load_state_dict(checkpoint['optim'])
         best_acc = checkpoint['acc']
+        best_IOU = checkpoint['metric']
         start_epoch = checkpoint['epoch']
         print('Start Epoch is {}'.format(start_epoch))
 
