@@ -14,7 +14,7 @@ conda install pytorch torchvision cuda91 -c pytorch
 
 (This is my environment, but others may also work)
 # Model
-The idea of this model is from [Learning Deconvolution Network for Semantic Segmentation](https://arxiv.org/abs/1505.04366/). Unlike the original model, fully connected layers as well as some other layers are dropped in my **DeConvNet**.
+The idea of this model is from [Learning Deconvolution Network for Semantic Segmentation](https://arxiv.org/abs/1505.04366/). Unlike the original model, fully connected layers as well as some other layers are dropped in the **DeConvNet**. The output stride is 16.
 
 20-layer **DeConvNet** configuration:
 
