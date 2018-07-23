@@ -18,7 +18,7 @@ The idea of this model is from [Learning Deconvolution Network for Semantic Segm
 
 20-layer **DeConvNet** configuration:
 
-
+<p align="center">
 ![alt text](https://github.com/CoserU/cancer-cell-semantic-segmentation/blob/master/visulization/figures/deconvnet.png)
 
 
@@ -53,6 +53,7 @@ The idea of this model is from [Learning Deconvolution Network for Semantic Segm
 | deconv9-1 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20320%5Ctimes%20320) | 6,553,600 | 36,864 |
 | deconv9-2 | ![](https://latex.codecogs.com/gif.latex?64%5Ctimes%20320%5Ctimes%20320) | 6,553,600 | 36,864 |
 | output | ![](https://latex.codecogs.com/gif.latex?2%5Ctimes%20320%5Ctimes%20320) | 204,800 | 128 |
+</p>
 
 
 U-Net from [U-Net: Convolutional Networks for Biomedical Image Segmentation](https://arxiv.org/abs/1505.04597/) was also implemented in the models. Here the paddings of 3 by 3 convolutional layers were set as 1 to preserve the spatial size.
