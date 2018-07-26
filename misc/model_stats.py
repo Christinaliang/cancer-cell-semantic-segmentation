@@ -36,13 +36,11 @@ def model_stats(net, image_size):
                 layer_activs.append(x.numel())
 
                 if module.groups == 1:
-                    layer_multadds.append(h_kernel*w_kernel*module.in_channels *
-                                          module.out_channels*h_input*w_input)
+                    layer_multadds.append(h_kernel*w_kernel*module.in_channels*module.out_channels*h_input*w_input)
                 else:  # depth-wise convolution
                     layer_multadds.append(h_kernel*w_kernel*module.in_channels*h_input*w_input)
 
-                print('{0:20}{1:15}{2:15}{3:15}'.format(
-                    layer_names[-1], layer_params[-1], layer_activs[-1], layer_multadds[-1]))
+                print('{0:20}{1:15}{2:15}{3:15}'.format(layer_names[-1], layer_params[-1], layer_activs[-1], layer_multadds[-1]))
 
             elif isinstance(module, nn.MaxPool2d) or isinstance(module, nn.MaxUnpool2d):  # pooling/unpooling layers
                 if isinstance(module, nn.MaxPool2d):
@@ -61,8 +59,7 @@ def model_stats(net, image_size):
                 layer_activs.append(x.numel())
                 layer_multadds.append(0)
 
-                print('{0:20}{1:15}{2:15}{3:15}'.format(
-                    layer_names[-1], layer_params[-1], layer_activs[-1], layer_multadds[-1]))
+                print('{0:20}{1:15}{2:15}{3:15}'.format(layer_names[-1], layer_params[-1], layer_activs[-1], layer_multadds[-1]))
 
     print('-'*65)
     return layer_names, layer_params, layer_activs, layer_multadds
