@@ -13,7 +13,7 @@ conda install pytorch torchvision cuda91 -c pytorch
 ```
 
 (This is my environment, but others may also work)
-# Model
+# Models
 The idea of this model is from [Learning Deconvolution Network for Semantic Segmentation](https://arxiv.org/abs/1505.04366/). Unlike the original model, fully connected layers as well as some other layers are dropped in the **DeConvNet**. The output stride is 16. A similar CNN model with skip connections was also implemented as **SegSkipNet**.
 
 20-layer **DeConvNet** configuration:
@@ -56,3 +56,7 @@ The idea of this model is from [Learning Deconvolution Network for Semantic Segm
 
 
 **U-Net** from [U-Net: Convolutional Networks for Biomedical Image Segmentation](https://arxiv.org/abs/1505.04597/) was implemented in the models. Here the paddings of 3 by 3 convolutional layers were set as 1 to preserve the spatial size.
+
+
+# Visualization
+The maximum activations of deconvolutional layers can be visualized by running max_activation.py, which illustrates pixel-wise segmentation via these learned layers. Besides, the features of the first convolutional layer can be visualized by running visualize_features.py.
