@@ -14,7 +14,7 @@ conda install pytorch torchvision cuda91 -c pytorch
 
 (This is my environment, but others may also work)
 # Model
-The idea of this model is from [Learning Deconvolution Network for Semantic Segmentation](https://arxiv.org/abs/1505.04366/). Unlike the original model, fully connected layers as well as some other layers are dropped in the **DeConvNet**. The output stride is 16.
+The idea of this model is from [Learning Deconvolution Network for Semantic Segmentation](https://arxiv.org/abs/1505.04366/). Unlike the original model, fully connected layers as well as some other layers are dropped in the **DeConvNet**. The output stride is 16. A similar **SegNet** with skip connections was also implemented.
 
 20-layer **DeConvNet** configuration:
 
@@ -55,4 +55,4 @@ The idea of this model is from [Learning Deconvolution Network for Semantic Segm
 | output | ![](https://latex.codecogs.com/gif.latex?2%5Ctimes%20320%5Ctimes%20320) | 204,800 | 128 |
 
 
-U-Net from [U-Net: Convolutional Networks for Biomedical Image Segmentation](https://arxiv.org/abs/1505.04597/) was also implemented in the models. Here the paddings of 3 by 3 convolutional layers were set as 1 to preserve the spatial size.
+**U-Net** from [U-Net: Convolutional Networks for Biomedical Image Segmentation](https://arxiv.org/abs/1505.04597/) was implemented in the models. Here the paddings of 3 by 3 convolutional layers were set as 1 to preserve the spatial size.
