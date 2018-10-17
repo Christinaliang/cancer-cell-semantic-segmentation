@@ -59,4 +59,4 @@ The idea of this model is from [Learning Deconvolution Network for Semantic Segm
 
 
 # Visualization
-The maximum activations of deconvolutional layers can be visualized by running max_activation.py, which illustrates pixel-wise segmentation via these learned layers. Besides, the features of the first convolutional layer can be visualized by running visualize_features.py.
+The maximum activations of deconvolutional layers can be visualized by running max_activation.py, which illustrates coarse-to-fine pixel-wise segmentation via these learned layers. Besides, the features of the first convolutional layer can be visualized by running visualize_features.py.
