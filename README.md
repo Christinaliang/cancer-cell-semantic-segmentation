@@ -57,6 +57,7 @@ The idea of this model is from [Learning Deconvolution Network for Semantic Segm
 
 **U-Net** from [U-Net: Convolutional Networks for Biomedical Image Segmentation](https://arxiv.org/abs/1505.04597/) was implemented in the models. Here the paddings of 3 by 3 convolutional layers were set as 1 to preserve the spatial size.
 
+The model_stats.py file in the misc folder can generate the configuration of the models, i.e., layers, activations and Mult-Adds.
 
 # Visualization
 The maximum activations of deconvolutional layers can be visualized by running max_activation.py, which illustrates coarse-to-fine pixel-wise segmentation via these learned layers. Besides, the features of the first convolutional layer can be visualized by running visualize_features.py.
